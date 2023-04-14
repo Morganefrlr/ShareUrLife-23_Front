@@ -1,23 +1,74 @@
-import logo from './logo.svg';
-import './App.css';
+import Navbar from './components/navbar/Navbar';
+import Home from './pages/Home';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import Friends from './pages/Friends';
+import Credits from './pages/Credits';
+import Connect from './pages/Connect';
+
+import { Navigate, Outlet,RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { useContext } from 'react';
+import { AuthContext } from './authContext';
+import './styles/styles.scss'
 
 function App() {
+  
+  const {userOnline} = useContext(AuthContext)
+
+  const RouteProtected = ({children}) => {
+    if(!userOnline){
+      return <Navigate to={'/connect'}/>
+    }
+    return children
+  }
+const Layout = () =>{
+  return(
+    <div id='Layout' style={{display: 'flex', background : '#567174'}}>
+        <Navbar/>
+      <div style={{flex : 2}}>
+        <Outlet />
+      </div>
+      
+    </div>
+  )
+
+}
+ const router = createBrowserRouter([
+  {
+    path:'/',
+    element:<Layout/>,
+    children:[
+      {
+        path:'/',
+        element:<RouteProtected><Home/></RouteProtected>,
+      },
+      {
+        path:'/settings',
+        element:<RouteProtected><Settings/></RouteProtected>,
+      },
+      {
+        path:'/friends/:id',
+        element:<RouteProtected><Friends/></RouteProtected>,
+      },
+      {
+        path:'/profile/:id',
+        element:<RouteProtected><Profile/></RouteProtected>,
+      },
+      {
+        path:'/credits',
+        element:<RouteProtected><Credits/></RouteProtected>,
+      },
+    ]
+  },
+  {
+    path:'/connect',
+    element: <Connect/>,
+  }
+ ])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <RouterProvider router={router}/>
     </div>
   );
 }

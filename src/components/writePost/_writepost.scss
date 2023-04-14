@@ -1,0 +1,98 @@
+.writePost{
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background-color: lighten($navbar,5);
+
+    &_top{
+        display: flex;
+        padding: 10px;
+        height: 20vh;
+        justify-content: space-between;
+        .userImg{
+            @include imgUser
+        }
+        textarea{
+            width: 90%;
+            margin: 3px;
+            padding: 20px 8px;
+            font-size: 18px;
+            background-color: transparent;
+            border-radius: 20px;
+            border: none;
+            color: $textColorDark;
+            &:focus{
+                outline: 1px solid $textColorDark;
+            }
+        }
+        .width{
+            width: 60%;
+        }
+        .filePost{
+             display: flex;
+             width: 30%;
+            .imgPost{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 20px;
+                margin-left:3px;
+            }
+            .icon{
+                position: absolute;
+                margin-top: 1%;
+                margin-left: 9%;
+                cursor: pointer;
+                fill: $green;
+            }
+        }
+    }
+
+    hr{
+        border: 0.25px solid $back;
+    }
+    &_bottom{
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        padding: 10px;
+
+        .item{
+            width: 40px;
+            height: 40px;
+            margin: auto 10px auto 0;
+            border-radius: 10px;
+            background-color: $back;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            label{
+                height: 24px;
+            }
+            &_icon{
+                fill: $textColorDark;
+                cursor: pointer;
+            }
+        }
+        button{
+            width: 24%;
+            border-radius: 10px;
+            border: none;
+            background-color: $green;
+            font-size: 20px;
+            cursor: pointer;
+            &:hover{
+                background-color: darken($green, 10);
+                color: #fff;
+            }
+            &:focus{
+                background-color: darken($green, 20);
+                color: #fff;
+                font-weight: 500;
+            }
+        }
+    }
+}

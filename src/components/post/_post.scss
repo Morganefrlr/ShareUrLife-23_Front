@@ -1,0 +1,140 @@
+.post{
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background-color: lighten($navbar,5);
+    &_top{
+        display: flex;
+        padding: 10px;
+        .userImg{
+            @include imgUser
+        }
+        .postInfos{
+            display: flex;
+            flex-direction: column;
+            width: 45%;
+            gap: 3px;
+            //margin: 3px;
+            padding: 15px 10px;
+            a{
+                text-decoration: none;
+            }
+            span{
+                color: $textColorDark;
+                font-size: 18px;
+            }
+        }
+        .menu{
+            align-self: center;
+            position: relative;
+            margin-left: 28%;
+            .icon{
+                fill: $textColorDark;
+                transform: rotate(90deg);
+                font-size: 40px;
+                cursor: pointer;
+            }
+            .menuOpen{
+                opacity: 0;
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                width: 5vw;
+                height: fit-content;
+                background-color: $textColorDark;
+                border-radius: 15px;
+                gap: 5px;
+                align-items: center;
+                padding: 10px;
+                animation: menuPostOpen 1s both;
+                hr{
+                    width: 100%;
+                    border: 0.5px solid;
+                    margin: 5px auto;
+                }
+                &_icon{
+                    margin: 5px;
+                    cursor: pointer;
+                    &:hover{
+                        fill: $green;
+                    }
+                }
+            }
+
+        }
+        
+    }
+    &_desc{
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        span{
+            color: $textColorDark;
+            font-size: 18px;
+        }
+        img{
+            width: 100%;
+            height: 35vh;
+            object-fit: cover;
+            border-radius: 20px;
+            margin: 10px auto;
+        }
+    }
+    &_icons{
+        display: flex;
+        justify-content: flex-end;
+        padding-right: 15px;
+        .item{
+            width: 20px;
+            height: 20px;
+            display: flex;
+            flex-direction: row;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+            margin: 5px 15px 20px 25px;
+            span{
+                color: $textColorDark;
+                font-size: 18px;
+            }
+            .icon{
+                fill: $textColorDark;
+                cursor: pointer;
+            }
+            .green{
+                fill: $green;
+                &:hover{
+                    fill: darken($green, 30)
+                }
+            }
+            .red{
+                fill: #DF6F6F;
+            }
+        }
+
+    }
+}
+
+@media screen and (max-width: 1024px){
+    .post{
+        &_top{
+            .menu{
+                margin-left: 20%;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 768px){
+    .post{
+        &_top{
+            .menu{
+                .menuOpen{
+                    width: 12vw;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,117 @@
+.comment{
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background-color: lighten($navbar,5);
+    hr{
+        border: 0.1px solid $textColorDark;
+    }
+    &_edit{
+        .top{
+            display: flex;
+            padding: 10px;
+            height: 5vh;
+            align-items: center;
+            margin-bottom: 20px;
+            .userImg{
+                @include imgUser;
+                width: 40px;
+                height: 40px;
+                img{
+                    width: 30px;
+                    height: 30px;
+                }
+            }
+            textarea{
+                width: 80%;
+                margin: 3px;
+                padding: 10px 8px;
+                font-size: 18px;
+                background-color: transparent;
+                border-radius: 10px;
+                border: none;
+                color: $textColorDark;
+                outline: 1px solid $textColorDark;
+            }
+            button{
+                @include button;
+                width: 10%;
+                height: 100%;
+                align-self: center;
+                border-radius: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                
+            }
+        }
+        
+    }
+    &_read{
+        display: flex;
+        gap: 20px;
+        margin: 10px;
+        .userImg{
+            @include imgUser;
+            width: 40px;
+            height: 40px;
+            img{
+                width: 30px;
+                height: 30px;
+            }
+        }
+        .left{
+            display: flex;
+            flex-direction: column;
+            width: 80%;
+            .top{
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                .comInfos{
+                    display: flex;
+                    flex-direction: column;
+                    span{
+                        color: $textColorDark;
+                        font-size: 14px;
+                        &:first-child{
+                            font-weight: 700;
+                            font-size: 16px;
+                        }
+                    }
+                    
+                }
+                .comIcons{
+                    display: flex;
+                    gap: 10px;
+                    .icon{
+                        fill: $green;
+                        cursor: pointer;
+                        font-size: 14px;
+                    }
+                }
+            }
+            .comDesc{
+                color: $textColorDark;
+                font-size: 14px;
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            .comDescEdit{
+                width: 100%;
+                margin: 3px;
+                padding: 20px 8px;
+                font-size: 18px;
+                background-color: transparent;
+                border-radius: 10px;
+                border: none;
+                color: $textColorDark;
+                &:focus{
+                    outline: 1px solid $textColorDark;
+                }
+            }
+        }
+    }
+}

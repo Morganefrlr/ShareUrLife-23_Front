@@ -1,0 +1,46 @@
+.widgetFriends{
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background-color: lighten($navbar,5);
+    
+
+    &_top{
+        height: 45px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        span{
+            color: $textColorDark;
+            font-size: 22px;
+            text-transform: uppercase;
+            font-weight: 200;
+        }
+    }
+    hr{
+        border: 0.5px solid $back;
+    }
+    &_container{
+        display: flex;
+        flex-wrap: wrap;
+        padding: 6px;
+        justify-content: center;
+        align-items: center;
+    }
+    &_bottom{
+        height: 5%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+        a{
+            text-decoration: none;
+        }
+        span{
+            cursor: pointer;
+            color: $textColorDark;
+        }
+    }
+}

@@ -1,0 +1,193 @@
+
+.navbar{
+    flex : 0.5;
+    background: $navbar; 
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8vh;
+    position: sticky;
+    top: 0;
+   &_searchBar{
+        width: 80%;
+        height: 5vh;
+        background-color: #2f3F41;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        margin-top: 5vh;
+        padding: 1vh;
+        gap: 1vh;
+        .icon{
+            fill: $textColorDark;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        input{
+            background-color: transparent;
+            border: none;
+            color: $textColorDark;
+            font-size: 18px;
+            width: 100%;
+            &:focus{
+                outline: none;
+                border-bottom: 1px solid $textColorDark;
+            }
+        }
+    }
+    &_user{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2vh;
+        .navbarUserCircle{
+            width: 100px;
+            height: 100px;
+            border: 1px solid $textColorDark;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .navbarUserImg{
+                width: 90px;
+                height: 90px;
+                object-fit: cover;
+                border-radius: 50%;
+            }
+        }
+        .navbarUserName{
+            font-size: 2.5vw;
+            color: $textColorDark;
+        }
+    }
+    &_menu{
+        display: flex;
+        flex-direction: column;
+        width: 90%;
+        gap: 2vh;
+        margin: 7vh 0;
+        .navbarMenuItem{
+            height: 4vh;
+            display: flex;
+            gap: 1vw;
+            //padding-left: 8vh;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            padding-bottom: 1vh;
+            span{
+                color: $textColorDark;
+            }
+            .icon{
+                fill: $textColorDark;
+                font-size: 2vw;
+            }
+            .lien{
+                text-decoration: none;
+                color: $textColorDark;
+            }
+        }
+        .actif{
+            border-bottom: 1px solid $green;
+            span{
+              color: $green;  
+            }
+            .icon{
+              fill: $green;
+            }
+            
+            
+        }
+    }
+    .menuIcon{
+        display: none;
+    }
+    &_logout{
+        .icon{
+            font-size: 2vw;
+            fill: $textColorDark;
+            cursor: pointer;
+            &:hover{
+                fill: $green;
+            }
+        }
+    }
+    .menuIcon{
+        display: none;
+    }
+    &_credits{
+        text-decoration: none;
+        span{
+            color: $textColorDark;
+            font-size: 12px;
+            cursor: pointer;
+            //margin-bottom: 5vh;
+        }
+    }
+}
+.menuIconOpen{
+    display: none   ;
+}
+
+
+
+@media screen and (max-width: 768px) {
+    .navbar{
+        flex-direction: row;
+        justify-content: space-around;
+        gap: 15vw;
+        height: 20vh;
+        padding: 3vh 0;
+        z-index: 999;
+        &_searchBar{
+            width: 25vw;
+            margin: 0;
+        }
+        &_user,&_menu, &_logout{
+            display: none;
+        }
+        .menuIcon{
+            display: flex;
+            cursor: pointer;
+            font-size: 5vh;  
+            fill: $textColorDark;
+        }
+        
+    }
+    .menuIconOpen{
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        padding: 2vw 4vh ;
+        background-color: $navbar;
+        position: sticky;
+        top: 11vh;
+        z-index: 999;
+        animation: menuNavbarOpen 1s both;
+        a{
+            text-decoration: none;
+        }
+        span{
+            color: $textColorDark;
+            cursor: pointer;
+            
+            &:hover{
+                color:$green;
+            }
+        }
+        hr{
+            width: 0px;
+            border: 0.5px solid $textColorDark;
+        }
+        .icon{
+            fill: $textColorDark;
+            cursor: pointer;
+            &:hover{
+                color:$green;
+            }
+        }
+
+    }
+
+}

@@ -1,0 +1,33 @@
+.card{
+    display: flex;
+    flex-direction: column;
+    width: 47%;
+    height: fit-content;
+    border-radius: 20px;
+    border: 1px solid $back;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    margin: 2px;
+    .userImg{
+        @include imgUser
+    }
+    .userInfos{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        align-items: center;
+        a{
+            text-decoration: none;
+        }
+        span{
+            color: $textColorDark;
+            font-size: 1.2vh;
+        }
+    }
+}
+.background{
+    background-color: lighten($navbar,5);
+    border: none;
+    width: 100%;
+}

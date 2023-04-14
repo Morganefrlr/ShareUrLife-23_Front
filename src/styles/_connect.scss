@@ -1,0 +1,224 @@
+.connectPage{
+    background-color: #7BA9A9;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+
+    .connectMainBox{
+        width: 70vw;
+        height: 30vh;
+        background-color: #EDEEF0;
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        padding-right: 8vw;  
+        box-shadow: 0px 2px 3px rgba(0,0,0,0.25);
+        &_title{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 3vh;
+            animation: connect 1s both;
+            h1{
+                font-family: $fontLogo;
+                font-weight: 400;
+                font-size: 3vh;
+            }
+            span{
+                text-align: center
+            }
+            button{
+                @include button;
+                box-shadow: 0px 2px 3px rgba(0,0,0,0.25);
+                background-color: #BCD9D7;
+                align-self:center ;
+                &:hover{
+                    background-color: darken(#BCD9D7, 10);
+                    box-shadow: none;
+                    color: #fff;
+                }
+                &:focus{
+                    cursor: pointer;
+                    background-color: darken(#BCD9D7, 20);
+                    box-shadow: none;
+                    color: #fff;
+                    font-weight: 700;
+                }
+            }
+        }
+        &.slider{
+            justify-content: flex-start;
+            padding-left: 8vw; 
+        }
+    }
+    .sliderBox{
+        width: 30vw;
+        height: 60vh;
+        background-color: $navbar;
+        position: relative;
+        top: -5%;
+        left: 21vw;
+        transition: all 1s ease;
+        .formSlider{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            &_img{
+                height: 30%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                .imgCircle{
+                    width: 130px;
+                    height: 130px;
+                    border: 1px solid #7BA9A9;
+                    border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .imgBack{
+                    width: 120px;
+                    height: 120px;
+                    background-color: $textColorDark;
+                    border-radius: 50%;
+                    position: absolute;
+                    object-fit: cover;
+                    span{
+                        position: relative;
+                        font-size: 60px;
+                        top: 15px;
+                        left: 48px;
+                        cursor: pointer;
+                    }
+                }
+            }
+            form{
+                height: 70%;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-evenly;
+                align-items: center;
+                .formBox{
+                    width: 90%;
+                    height: 15%;
+                    background-color: darken($navbar, 5);
+                    border-radius: 10px;
+                    display: flex;
+                    align-items: center;
+                    gap: 20px;
+                    padding: 10px;
+                    color: #7BA9A9;
+                    input{
+                        width: 80%;
+                        font-size: 20px;
+                        background-color: transparent;
+                        border: none;
+                        color: #7BA9A9;
+                        &:focus{
+                            outline: none;
+                            border-bottom: 1px solid #7BA9A9;
+                        }
+                    }
+                    &_icon{
+                        fill: #7BA9A9;
+                    }
+                }
+                button{
+                    @include button;
+                }
+                .errMessageConnect{
+                    color:$textColorDark;
+                    text-align: center;
+                }
+            }
+            .connect{
+                height: 100%;
+                justify-content: center;
+                gap: 40px;
+                .formBox{
+                    height: 10%;
+                }
+            }
+        }
+    }
+    .slide{
+        left: 50vw;
+    }
+}
+
+
+
+@media screen and (max-width: 768px){
+    .connectPage{
+        .connectMainBox{
+            justify-content: center;
+            padding: 0;
+            &_title{
+                h1,span{
+                    display: none;
+                }
+                button{
+                    background-color: #EDEEF0;
+                    color: #7BA9A9;
+                    height: 5vh;
+                    width: fit-content;
+                    padding: 1vh;
+                    font-size: 2vh;
+                    border-radius: 25px;
+                    position: relative;
+                    top: -40vh;
+                    left: 30vw;
+                }
+            }
+            &.slider{
+                justify-content: center;
+                padding: 0;
+            }
+        }
+        .sliderBox{
+            width: 50vw;
+            left: 25vw;
+        }
+    }
+}
+
+@media screen and (max-width: 480px){
+    .connectPage{
+        .connectMainBox{
+            background-color: transparent;
+            &_title{
+                button{
+                    left: 2vw;
+                }
+            }
+        }
+        .sliderBox{
+            width: 80vw;
+            left: 10vw;
+            .formSlider{
+                &_img{
+                    .imgCircle{
+                        width: 100px;
+                        height: 100px;
+                    }
+                    .imgBack{
+                        width: 90px;
+                        height: 90px;
+                        span{
+                            top: 1px;
+                            left: 33px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

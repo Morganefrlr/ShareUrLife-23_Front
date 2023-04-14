@@ -1,0 +1,46 @@
+
+
+$navbar: #243031;
+$back:#567174;
+$green: #D9E490;
+$textColorDark:#B9BCC1;
+$textColorLight:#464646;
+
+$fontLogo:'Alkatra', cursive;
+$fontMain:'Cormorant Garamond', serif;
+
+
+
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: $fontMain;
+    color: $textColorLight;
+}
+
+
+@import './keyframes.scss';
+@import '../styles/connect.scss';
+@import '../components/navbar/navbar.scss';
+@import '../components/writePost/writepost.scss';
+@import './home.scss';
+@import '../components/post/post.scss';
+@import '../components/widgetFriends/widgetfriends.scss';
+@import '../components/card/card.scss';
+@import './profil.scss';
+@import '../components/widgetUser/widgetuser';
+@import '../components/widgetImg/widgetimg.scss';
+@import './friends.scss';
+@import './settings.scss';
+@import '../components/comment/comment.scss';
+@import './credits.scss';
+
+
+
+
+@media screen and (max-width: 768px){
+    #Layout{
+        flex-direction: column;
+    }
+}
