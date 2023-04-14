@@ -99,7 +99,7 @@ const Connect = () => {
             return setErrRegisPass(true)
         }
     }
-   
+    console.log(errPassword)
 
 
     return (
