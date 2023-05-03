@@ -18,7 +18,7 @@ const Friends = () => {
    
 ////////////////////////////////// FETCH USER //////////////////////////////////
 
-    const { isLoading: loadUser, error: errorUser, data: user } = useQuery('user', () =>
+    const { data: user } = useQuery('user', () =>
         request.get('/user/' + id).then((res) => {
             return res.data
         })

@@ -15,14 +15,13 @@ const Connect = () => {
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
     const [username, setUsername] = useState()
-    const [errRegister, setErrRegister] = useState(null)
     const [errRegisPass, setErrRegisPass] = useState(false)
     const [errPassword, setErrPassword] = useState(false)
     const [errFile, setErrFile] = useState(false)
 
 ////////////////////////////////// LOGIN ////////////////////////////////// 
     
-
+   console.log(errPassword)
 
 const {login} = useContext(AuthContext)
 const handleLogin = async e => {
@@ -141,9 +140,6 @@ const handleLogin = async e => {
                                         <input type="password" placeholder='Mot de passe' required onChange={e => handlePassword(e)}/>
                                     </div>
                                     <button onClick={handleRegister}>S'enregistrer</button>
-                                    {errRegister && 
-                                        <span className="errMessageConnect">{errRegister}</span>
-                                    }
                                     {errFile && 
                                         <span className="errMessageConnect">Vous devez ajouter une photo de profil</span>
                                     }
