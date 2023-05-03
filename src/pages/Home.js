@@ -17,7 +17,7 @@ const Home = () => {
 ////////////////////////////////// GET POSTS //////////////////////////////////
     const { isLoading, error, data } = useQuery('posts', () =>
         request.get('/post').then((res) => {
-            return res.data
+            return res.data.reverse()
         })
     )
    

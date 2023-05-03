@@ -25,6 +25,14 @@ const Post = ({post}) => {
     const [desc, setDesc] = useState(post && `${post.desc}`)
     const[openComment, setOpenComment] = useState(false)
     const postId = post && post.id
+    const handleComment = () =>{
+        if(!openComment){
+            setOpenComment(true)
+        }
+        if(openComment){
+            setOpenComment(false)
+        }
+    }
 
     ////////////////////////////////// UPDATE POST //////////////////////////////////
    
@@ -136,7 +144,7 @@ const Post = ({post}) => {
                     <span>{data && data.length}</span>
                 </div>
                 <div className="item">
-                    <TextsmsIcon className='icon' onClick={() => setOpenComment(true)}/>
+                    <TextsmsIcon className='icon' onClick={handleComment}/>
                     <span>{coms && coms.length}</span>
                 </div>
             </div>

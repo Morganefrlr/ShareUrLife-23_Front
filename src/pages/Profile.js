@@ -31,7 +31,7 @@ const Profile = () => {
 
     const { isLoading: loadPosts, error: errorPosts, data: posts } = useQuery('posts', () =>
         request.get('/post/' + id).then((res) => {
-            return res.data
+            return res.data.reverse()
         })
     )
 

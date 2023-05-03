@@ -55,6 +55,7 @@ const Comment = ({postId, comments}) => {
       const handleUpdate = async (e) => {
         e.preventDefault();
         updateMutation.mutate({desc})
+        setDesc("")
         setUpdate(false)
     };
 
