@@ -9,104 +9,86 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import {Link} from 'react-router-dom'
 import moment from 'moment'
-import { useContext, useState, useEffect } from 'react';
-
+import { useContext, useState } from 'react';
+import { useQuery, useQueryClient, useMutation } from "react-query";
 import { AuthContext } from '../../authContext';
 import { request } from '../../axios';
 import Comment from '../comment/Comment';
 
 
 const Post = ({post}) => {
+    const urlImg = "https://shareurlife-23-back.onrender.com/images/"
     const [open, setOpen]= useState(false)
     const {userOnline} = useContext(AuthContext)
-    const urlImg = "https://shareurlife-23-back.onrender.com/images/"
+    const queryClient = useQueryClient();
     const[update, setUpdate] = useState(false)
     const [desc, setDesc] = useState(post && `${post.desc}`)
     const[openComment, setOpenComment] = useState(false)
-    const [comments, setComments] = useState()
-    const[likes, setLikes] = useState()
     const postId = post && post.id
 
     ////////////////////////////////// UPDATE POST //////////////////////////////////
-    const handleUpdate = async e =>{
-        const updatePost = {
-            desc,
-            img: post && post.img,
-        }
-        try{
-            await request.put("/post/" + postId, updatePost)
-            window.location.reload()
-        }
-        catch(err){
-            console.log(err)
-        }
-    }
    
+    const updateMutation = useMutation(
+        (post) => {
+          return request.put("/post/" + postId, post);
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["posts"]);
+          },
+        }
+      );
+      const handleUpdate = async (e) => {
+        e.preventDefault();
+        updateMutation.mutate({desc, img: post && post.img})
+        setUpdate(false)
+    };
     ////////////////////////////////// DELETE POST //////////////////////////////////
+    
+    const deleteMutation = useMutation(
+        (postId) => {
+          return request.delete("/post/" + postId);
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["posts"]);
+          },
+        }
+    );
 
-    const handleDelete = async e =>{
-        e.preventDefault()
-        try{
-            await request.delete('/post/' + postId)
-            window.location.reload()
-        }
-        catch(err){
-            console.log(err)
-        }
+    const handleDelete = () =>{
+        deleteMutation.mutate(postId)
     }
 
-
-    ////////////////////////////////// ADD COMMENT NUMBER ////////////////////////////////// 
-    useEffect(() => {
-        const fetchComments = async () =>{
-            await request.get('/comment/' + postId)
-            .then(res => {
-                setComments(res.data)
-            })
+    
+    ////////////////////////////////// LIKE ////////////////////////////////// 
+    
+    const { isLoading, error, data } = useQuery(["likes", post.id], () =>
+        request.get('/like/' + post.id).then((res) => {
+            return res.data
+        })
+    )
+    const mutation = useMutation(
+        (liked) => {
+          if (liked) return request.delete('/like/' + postId);
+            return request.post('/like', {postId});
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["likes"]);
+          },
         }
-        fetchComments()
-    },[postId])
+    );
+    const handleLike = () => {
+        mutation.mutate(data.includes(userOnline));
+    };
 
-
-
-    ////////////////////////////////// CREATE LIKE ////////////////////////////////// 
-    const handleLike = async e =>{
-        e.preventDefault()
-        const newLike = {
-            postId
-        }
-        try{
-            await request.post('/like', newLike)
-            window.location.reload()
-        }
-        catch(err){
-            console.log(err)
-        }
-    }
-
-    ////////////////////////////////// ADD LIKE ////////////////////////////////// 
-    useEffect(() => {
-        const fetchLikes = async () =>{
-            await request.get('/like/' + postId)
-            .then(res => {
-                setLikes(res.data)
-            })
-        }
-        fetchLikes()
-    },[postId])
-
-    ////////////////////////////////// DELETE LIKE ////////////////////////////////// 
-     const handleDeleteLike = async e =>{
-        e.preventDefault()
-        try{
-            await request.delete('/like/' + postId)
-            window.location.reload()
-        }
-        catch(err){
-            console.log(err)
-        }
-    }
-
+    ////////////////////////////////// COMMENTS ////////////////////////////////// 
+    const { data: coms } = useQuery(["comments", post.id], () =>
+    request.get('/comment/' + post.id).then((res) => {
+        return res.data 
+    })
+    )
 
     return (
         <div className="post">
@@ -145,17 +127,21 @@ const Post = ({post}) => {
                     </div>
                 }
                 <div className="item">
-                    {likes && likes.includes(userOnline) ? (<FavoriteIcon className='icon red' onClick={handleDeleteLike}/>) : (<FavoriteBorderIcon className='icon' onClick={handleLike}/>)}
-                    
-                    <span>{likes && likes.length}</span>
+                {error ? "Il y a une erreur!" : isLoading ? "En chargement!"
+                    : data && data.includes(userOnline) ? 
+                    (<FavoriteIcon className='icon red' onClick={handleLike}/>)
+                    : 
+                    (<FavoriteBorderIcon className='icon' onClick={handleLike} />)
+                }
+                    <span>{data && data.length}</span>
                 </div>
                 <div className="item">
                     <TextsmsIcon className='icon' onClick={() => setOpenComment(true)}/>
-                    <span>{comments && comments.length}</span>
+                    <span>{coms && coms.length}</span>
                 </div>
             </div>
             {openComment && 
-                <Comment  postId={post.id}/>
+                <Comment  postId={post.id} comments={coms} />
             }
         </div>
     );

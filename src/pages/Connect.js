@@ -7,7 +7,7 @@ import { AuthContext} from '../authContext.js'
 
 import {request } from '../axios.js'
 
-
+import { useMutation } from "react-query";
 
 const Connect = () => {
     const[slide, setSlide] = useState(true)
@@ -15,43 +15,31 @@ const Connect = () => {
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
     const [username, setUsername] = useState()
-
+    const [errRegister, setErrRegister] = useState(null)
+    const [errRegisPass, setErrRegisPass] = useState(false)
+    const [errPassword, setErrPassword] = useState(false)
+    const [errFile, setErrFile] = useState(false)
 
 ////////////////////////////////// LOGIN ////////////////////////////////// 
     
 
 
-    const {login} = useContext(AuthContext)
-    const [inputsLogin, setInputsLogin] = useState({
-        email:"",
-        password:""
-    })
-    
-    const handleChangeLogin = e =>{
-        const value = e.target.value
-        setInputsLogin({
-            ...inputsLogin,
-            [e.target.name]:value
-        })
+const {login} = useContext(AuthContext)
+const handleLogin = async e => {
+    e.preventDefault()
+    try{
+        await login({email, password})
+        window.location = "https://shareyourlife-23.netlify.app/";
     }
-    const handleLogin = async e => {
-        e.preventDefault()
-        try{
-            await login(inputsLogin)
-            window.location = "https://shareyourlife-23.netlify.app/"
-        }
-        catch(err){
-            console.log(err)
-        }
+    catch(err){
+        console.log(err)
     }
+}
 
 
 ////////////////////////////////// REGISTER ////////////////////////////////// 
 
-    const [errRegister, setErrRegister] = useState(null)
-    const [errRegisPass, setErrRegisPass] = useState(false)
-    const [errPassword, setErrPassword] = useState(false)
-    const [errFile, setErrFile] = useState(false)
+    
 
 
     const handlePassword = e =>{
@@ -67,39 +55,44 @@ const Connect = () => {
         }
     }
 
-    const handleRegister = async e =>{
+    const mutation = useMutation(
+        (newUser) => {
+          return(
+            request.post('/auth/register', newUser),
+            alert('Votre compte a bien été crée, vous pouvez vous connecter.')
+          ) 
+        }
+    );
+    const handleRegister = async (e) => {
         e.preventDefault();
         if(password){
-            const newUser = {
-                username,
-                email,
-                password
-            }; 
+            let profilPic =""
             if(!file){
                 setErrFile(true)
-            } 
-            if (file) {
-            const data =new FormData();
-            const filename = Date.now() + file.name;
-            data.append("name", filename);
-            data.append("file", file);
-            newUser.profilPic = filename;
-            try {
-                await request.post("/upload", data);
-            } catch (err) {}
             }
-            try {
-                await request.post("auth/register", newUser);
-                alert('Votre compte a bien été crée, vous pouvez vous connecter.')
-                window.location.reload()
-            } catch (err) {
-                setErrRegister(err.response.data)
+            if (file){
+                const data= new FormData()
+                const filename = Date.now() + file.name
+                data.append('name', filename)
+                data.append('file', file)
+                profilPic = filename
+                try{
+                    await request.post('/upload', data)
+                }
+                catch(err){
+                    console.log(err)
+                }
             }
+            mutation.mutate({ username,email,password,profilPic});
+            setEmail("");
+            setFile(null);
+            setUsername("");
+            setPassword("") 
         } else if (!password){
             return setErrRegisPass(true)
         }
-    }
-    console.log(errPassword)
+        
+    };
 
 
     return (
@@ -165,11 +158,11 @@ const Connect = () => {
                                 <form className='connect'>
                                     <div className="formBox" >
                                         <MailOutlineIcon className='formBox_icon'/>
-                                        <input type="text" placeholder='Email' name='email' onChange={handleChangeLogin}/>
+                                        <input type="text" placeholder='Email' name='email' onChange={e => setEmail(e.target.value)}/>
                                     </div>
                                     <div className="formBox">
                                         <LockIcon className='formBox_icon'/>
-                                        <input type="password" placeholder='Mot de passe' name="password" onChange={handleChangeLogin}/>
+                                        <input type="password" placeholder='Mot de passe' name="password"  onChange={e => setPassword(e.target.value)}/>
                                     </div>
                                     <button onClick={handleLogin}>Se Connecter</button>
 

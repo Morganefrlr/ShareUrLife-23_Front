@@ -1,43 +1,48 @@
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-
+import { useMutation, useQueryClient } from "react-query";
 import { useContext, useState } from "react";
-
 import { request} from '../axios.js'
 import {AuthContext} from '../authContext.js'
 
+
+
 const Settings = () => {
+
+    const queryClient = useQueryClient();
     const {userInfos} = useContext(AuthContext)
     const[cover, setCover] = useState()
     const[profil, setProfil] = useState()
     const urlImg = "https://shareurlife-23-back.onrender.com/images/"
-
-
-////////////////////////////////////// UPDATE LE COMPTE //////////////////////////////////////
     const [username, setUsername] = useState(userInfos && `${userInfos.username}`)
     const [email, setEmail] = useState(userInfos && `${userInfos.email}`)
     const [location, setLocation] = useState(userInfos && `${userInfos.location}`)
     const [birthday, setBirthday] = useState(userInfos && `${userInfos.birthday}`)
     const [from, setFrom] = useState(userInfos && `${userInfos.from}`)
     const [occupation, setOccupation] = useState(userInfos && `${userInfos.occupation}`)
+   
 
+    
+////////////////////////////////////// UPDATE USER //////////////////////////////////////
+    const mutation = useMutation(
+      (user) => {
+        return request.put("/user/" + userInfos.id, user);
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries(["user"]);
+        },
+      }
+    );
     const handleUpdate = async (e) => {
-        e.preventDefault()
-        const userUpdate ={
-            username,
-            email,
-            location,
-            birthday,
-            from,
-            occupation,
-            coverPic: userInfos && userInfos.coverPic,
-            profilPic:  userInfos && userInfos.profilPic
-        };
+        e.preventDefault();
+            let coverPic = userInfos && userInfos.coverPic
+            let profilPic = userInfos && userInfos.profilPic
         if(cover) {
             const data =new FormData();
             const filename = Date.now() + cover.name;
             data.append("name", filename);
             data.append("file", cover);
-            userUpdate.coverPic = filename;
+            coverPic = filename;
             try {
               await request.post("/upload", data);
             } catch (err) {
@@ -49,41 +54,36 @@ const Settings = () => {
             const filename = Date.now() + profil.name;
             data.append("name", filename);
             data.append("file", profil);
-            userUpdate.profilPic = filename;
+            profilPic = filename;
             try {
               await request.post("/upload", data);
             } catch (err) {
                   console.log(err)
               }
         }
-        try{
-            console.log(userUpdate)
-            await request.put('user/' + userInfos.id, userUpdate)
-            window.location = `https://shareyourlife-23.netlify.app/profile/${userInfos.id}`
+        mutation.mutate({username,email,location,birthday,from,occupation,coverPic,profilPic})
+        window.location = `https://shareyourlife-23.netlify.app/profile/${userInfos && userInfos.id}`;
+    };
+
+
+////////////////////////////////////// SUPPRIMER USER //////////////////////////////////////
+
+    const deleteMutation = useMutation(
+        (userInfos) => {
+          return request.delete('user/' + userInfos.id)
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["user"]);
+          },
         }
-        catch(err){
-            console.log(err)
-        }
+    );
+
+    const handleDelete = () =>{
+        localStorage.removeItem("userOnline");
+        deleteMutation.mutate(userInfos)
+        window.location = "https://shareyourlife-23.netlify.app/connect"
     }
-
-
-
-
-////////////////////////////////////// SUPPRIMER LE COMPTE //////////////////////////////////////
-
-    const handleDelete = async e =>{
-        e.preventDefault()
-        try{
-            alert('Vous êtes sur le point de supprimer votre compte')
-            await request.delete('user/' + userInfos.id)
-            window.location = "https://shareyourlife-23.netlify.app/connect"
-        }
-        catch(err){
-            console.log(err)
-        }
-    }
-
-
 
 
     return (

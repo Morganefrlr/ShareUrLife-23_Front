@@ -9,125 +9,100 @@ import Post from '../components/post/Post';
 import {request } from '../axios.js'
 import {AuthContext} from '../authContext.js'
 
-import { useContext, useEffect, useState } from 'react';
+import { useContext} from 'react';
 import { Link, useParams } from 'react-router-dom'
-
-
-
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 
 
 const Profile = () => {
     const params = useParams()
     const id = parseInt(params.id)
-    const [user, setUser] = useState()
     const {userOnline} = useContext(AuthContext)
-    const userId = user && user.id
-    const [posts, setPosts] = useState()
-    const [follower, setFollower] = useState()
-    const [followed, setFollowed] = useState()
-    const[icon, setIcon] = useState(null)
+    const queryClient = useQueryClient();
 ////////////////////////////////// FETCH USER //////////////////////////////////
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            request.get('user/' + id)
-            .then(res => {
-                setUser(res.data)
-            })
-        }
-        fetchUser()
-    },[id])
+    const { isLoading: loadUser, error: errorUser, data: user } = useQuery('user', () =>
+        request.get('/user/' + id).then((res) => {
+            return res.data
+        })
+    )
 
 ////////////////////////////////// FETCH POST //////////////////////////////////
 
-    useEffect(() => {
-        const fetchPost = async () =>{
-            await request.get('/post/' + userId)
-            .then(res => {
-                setPosts(res.data.reverse())
-            })
-        }
-        fetchPost()
-    },[userId]) 
+    const { isLoading: loadPosts, error: errorPosts, data: posts } = useQuery('posts', () =>
+        request.get('/post/' + id).then((res) => {
+            return res.data
+        })
+    )
 
-////////////////////////////////// ADD FRIEND //////////////////////////////////
-    const handleRelation = async e =>{
-        const followedUserId = {
-            followedUserId: userId
-        }
-        try{
-            await request.post("/relation", followedUserId)
-            window.location.reload()
-        }
-        catch(err){
-            console.log(err)
-        }
-    }
-
-////////////////////////////////// DELETE FRIEND //////////////////////////////////
-    const handleDeleteRelation = async e =>{
-        try{
-            await request.delete("/relation/" + userId)
-            window.location.reload()
-        }
-        catch(err){
-            console.log(err)
-        }
-    }
 ////////////////////////////////// GET FOLLOWER //////////////////////////////////
-    useEffect(() => {
-        const fetchFollower = async () =>{
-            await request.get('/relation/follower/' + id)
-            .then(res => {
-                setFollower(res.data)
-            })
-        }
-        fetchFollower()
-    },[id]) 
+
+    const { data : follower } = useQuery('follower', () =>
+        request.get('/relation/follower/' + id).then((res) => {
+            return res.data
+        })
+    )
 
 ////////////////////////////////// GET FOLLOWED //////////////////////////////////
-    useEffect(() => {
-        const fetchFollowed = async () =>{
-            await request.get('/relation/followed/' + id)
-            .then(res => {
-                setFollowed(res.data)
-            })
-        }
-        fetchFollowed()
-    },[id]) 
 
-////////////////////////////////// GET FOLLOWED USER ONLINE//////////////////////////////////
-    useEffect(() => {
-        const fetchFollowed = async () =>{
-            await request.get('/relation/'+ userOnline)
-            .then(res => {
-                for(let i = 0; i < res.data.length; i++ ){
-                    if(res.data[i].followedUserId === id){
-                        setIcon(true)
-                        break
-                        
-                    }
-                    else if(res.data[i].followedUserId !== id){
-                        setIcon(false)
-                    }
-                }
-            })
+    const { data : followed } = useQuery('followed', () =>
+        request.get('/relation/followed/' + id).then((res) => {
+            return res.data
+        })
+    )
+
+
+
+
+////////////////////////////////// ADD FRIEND //////////////////////////////////
+    
+    const mutationFriend = useMutation(
+        (relation) => {
+          if (relation) return request.post('/relation', {followedUserId:id});
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["follower"]);
+          },
         }
-        fetchFollowed()
-    },[userOnline, id]) 
+    );
+    const handleRelation = () => {
+        mutationFriend.mutate(id);
+    };
+
+////////////////////////////////// DELETE FRIEND //////////////////////////////////
+
+    const mutation = useMutation(
+        (relation) => {
+          if (relation) return request.delete('/relation/' + id);
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["follower"]);
+          },
+        }
+    );
+    const handleDeleteRelation = () => {
+        mutation.mutate(id);
+    };
+   
+
 
     return (
         <div className="profil">
-            <WidgetImg cover={user && user.coverPic} profil={user && user.profilPic} name={user && user.username} userId={userId}/>
+            {errorUser ? "Il y a une erreur!" : loadUser ? "En chargement!"
+                    : <WidgetImg cover={user && user.coverPic} profil={user && user.profilPic} name={user && user.username} userId={user.id}/>
+            }
             {id === userOnline && 
                 <Link to={`/settings`}><SettingsIcon className='settingsIcon' /></Link>
             }
-            {id !== userOnline && icon && icon &&
-                <PersonRemoveIcon className='settingsIcon' onClick={handleDeleteRelation}/>
-            }
-            {id !== userOnline && icon === false &&
-                <PersonAddIcon className='settingsIcon' onClick={handleRelation}/>
-            }
+            {id !== userOnline && follower && follower.map(item => {
+                return (
+                    <div key={item.id}>
+                    {item.followerUserId === userOnline ? (<PersonRemoveIcon className='settingsIcon' onClick={handleDeleteRelation}/>) : (<PersonAddIcon className='settingsIcon' onClick={handleRelation}/>)}
+                    </div>
+                )
+            } )}
             {id !== userOnline && follower && follower.length === 0 &&
                 <PersonAddIcon className='settingsIcon' onClick={handleRelation}/>
             }
@@ -136,21 +111,24 @@ const Profile = () => {
                     <div className="title">
                         <span>Infos</span>
                     </div>
-                    <WidgetUser location={user && user.location} birthday={user && user.birthday} from={user && user.from} occupation={user && user.occupation}/>
+                    {errorUser ? "Il y a une erreur!" : loadUser ? "En chargement!"
+                        : <WidgetUser location={user && user.location} birthday={user && user.birthday} from={user && user.from} occupation={user && user.occupation}/>
+                    }
                     <div className="title">
                         <span>Friends</span>
                     </div>
-                    <WidgetFriends followed={followed} userId={userId}/>
+                    {errorUser ? "Il y a une erreur!" : loadUser ? "En chargement!"
+                        : <WidgetFriends followed={followed} userId={user.id}/>
+                    }
                 </div>
                 <div className="infosRight">
                     <div className="title">
                         <span>Posts</span>
                     </div>
-                    {posts && posts.map(item =>
-                        <Post post={item} key={item.id}/>
-                    )}
+                    {errorPosts ? "Il y a une erreur!" : loadPosts ? "En chargement!"
+                        : posts && posts.map(item => <Post key={item.id} post={item}/>)
+                    }
                 </div>
-
             </div>
         </div>
     );

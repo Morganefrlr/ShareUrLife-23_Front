@@ -10,74 +10,71 @@ import {Link} from 'react-router-dom'
 
 import { AuthContext } from '../../authContext';
 import { request } from '../../axios';
+import { useQueryClient, useMutation } from "react-query";
 
 
-
-
-const Comment = ({postId}) => {
+const Comment = ({postId, comments}) => {
 
     const urlImg = "https://shareurlife-23-back.onrender.com/images/"
+    const queryClient = useQueryClient();
     const {userInfos} = useContext(AuthContext)
     const [update, setUpdate] = useState()
     const [desc, setDesc] = useState()
-    const [comment, setComment] = useState()
-    const [ descUpdate, setDescUpdate] = useState()
-   
- 
-   ////////////////////////////////// CREATE COMMENT ////////////////////////////////// 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        const newComment = {
-            desc,
-            postId,
-        }
-        try {
-            await request.post('/comment/', newComment)
-            window.location.reload()
-        }
-        catch(err){
-            console.log(err)
-        }
-    }
-
 
     ////////////////////////////////// ADD COMMENT ////////////////////////////////// 
-    useEffect(() => {
-        const fetchComment = async () =>{
-            await request.get('/comment/' + postId)
-            .then(res => {
-                setComment(res.data.reverse())
-            })
+
+    const mutation = useMutation(
+        (newComment) => {
+          return request.post('/comment/', {desc, postId});
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["comments"]);
+          },
         }
-        fetchComment()
-    },[postId])
+    );
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        mutation.mutate({ desc, postId});
+        setDesc("");
+
+    };
 
     ////////////////////////////////// UPDATE COMMENT ////////////////////////////////// 
-    const handleUpdate = async e =>{
-        const updateComment = {
-            desc: descUpdate,
+    const updateMutation = useMutation(
+        (comment) => {
+            console.log(comment)
+          return request.put("/comment/" + update, comment);
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["comments"]);
+          },
         }
-        try{
-            await request.put("/comment/" + update, updateComment)
-            window.location.reload()
-        }
-        catch(err){
-            console.log(err)
-        }
-    }
+      );
+      const handleUpdate = async (e) => {
+        e.preventDefault();
+        updateMutation.mutate({desc})
+        setUpdate(false)
+    };
 
     ////////////////////////////////// DELETE POST //////////////////////////////////
+    const deleteMutation = useMutation(
+        (commentId) => {
+          return request.delete("/comment/" + commentId);
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["comments"]);
+          },
+        }
+    );
 
-    const handleDelete = async e =>{
-        e.preventDefault()
-        try{
-            await request.delete('/comment/' + update)
-            window.location.reload()
-        }
-        catch(err){
-            console.log(err)
-        }
+    const handleDelete = (commentId) =>{
+        deleteMutation.mutate(commentId)
     }
+   
+
 
 
     return (
@@ -87,11 +84,11 @@ const Comment = ({postId}) => {
                     <div className="userImg">
                         <img src={urlImg + userInfos.profilPic} alt="" />
                     </div>
-                    <textarea rows="1" placeholder="Partagez vos envies......." required onChange={e => setDesc(e.target.value)}></textarea>
+                    <textarea rows="1" placeholder="Partagez vos envies......." required onChange={e => setDesc(e.target.value)} value={update ? "" : desc}></textarea>
                     <button onClick={handleSubmit}><SendIcon/></button>
                 </div>
             </div>
-            {comment && comment.map(item =>
+            {comments && comments.map(item =>
                 <div className='comment_read' key={item.id}>
                     <div className="userImg">
                         <img src={urlImg + item.profilPic} alt="" />
@@ -107,19 +104,16 @@ const Comment = ({postId}) => {
                                     {update ? (
                                         <>
                                             <CheckCircleIcon className='icon' onClick={handleUpdate}/>
-                                            <DeleteForeverIcon className='icon' onClick={handleDelete}/>
+                                            <DeleteForeverIcon className='icon' onClick={() => handleDelete(item.id)}/>
                                         </>
-                                    ) : (<BorderColorIcon className='icon' onClick={() => {setUpdate(item.id); setDescUpdate(item.desc)}}/>)}
+                                    ) : (<BorderColorIcon className='icon' onClick={() => {setUpdate(item.id); setDesc(item.desc)}}/>)}
                                 </div>
-                            
                             }
-                            
                         </div>
                         {update && update === item.id ? 
-                        ( <textarea className='comDescEdit' name="desc" rows="1" value={descUpdate} required onChange={e => setDescUpdate(e.target.value)}></textarea>)
+                        ( <textarea className='comDescEdit' name="desc" rows="1" value={desc} required onChange={e => setDesc(e.target.value)}></textarea>)
                         : 
                         ( <span className='comDesc'>"{item.desc}"</span>)}
-
                     </div>
                 </div>
             )}

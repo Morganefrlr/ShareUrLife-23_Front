@@ -6,52 +6,37 @@ import {request } from '../axios.js'
 import WidgetImg from "../components/widgetImg/WidgetImg";
 import Card from "../components/card/Card";
 
-import { useState,useEffect } from "react";
+import { useState} from "react";
 import {useParams } from 'react-router-dom'
+import { useQuery } from 'react-query'
 
 const Friends = () => {
     const [open, setOpen] = useState(false)
     const [title, setTitle] = useState('Abonnements')
-
     const params = useParams()
     const id = parseInt(params.id)
-    const [user, setUser] = useState()
-    const[follower, setFollower] = useState()
-    const[followed, setFollowed] = useState()
-
+   
 ////////////////////////////////// FETCH USER //////////////////////////////////
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            request.get('user/' + id)
-            .then(res => {
-                setUser(res.data)
-            })
-        }
-        fetchUser()
-    },[id])
+    const { isLoading: loadUser, error: errorUser, data: user } = useQuery('user', () =>
+        request.get('/user/' + id).then((res) => {
+            return res.data
+        })
+    )
 
 ////////////////////////////////// GET FOLLOWER //////////////////////////////////
-    useEffect(() => {
-        const fetchFollower = async () =>{
-            await request.get('/relation/follower/' + id)
-            .then(res => {
-                setFollower(res.data)
-            })
-        }
-        fetchFollower()
-    },[id]) 
+    const { data : follower } = useQuery('follower', () =>
+        request.get('/relation/follower/' + id).then((res) => {
+            return res.data
+        })
+    )
 
 ////////////////////////////////// GET FOLLOWED //////////////////////////////////
-    useEffect(() => {
-        const fetchFollowed = async () =>{
-            await request.get('/relation/followed/' + id)
-            .then(res => {
-                setFollowed(res.data)
-            })
-        }
-        fetchFollowed()
-    },[id]) 
+    const { data : followed } = useQuery('followed', () =>
+        request.get('/relation/followed/' + id).then((res) => {
+            return res.data
+        })
+    )
 
     return (
         <div className="friends">

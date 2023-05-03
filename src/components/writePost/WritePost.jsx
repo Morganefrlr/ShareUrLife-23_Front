@@ -6,7 +6,7 @@ import ImageIcon from '@mui/icons-material/Image';
 import { useContext, useState } from "react";
 import { AuthContext } from "../../authContext";
 import { request } from "../../axios";
-
+import { useMutation, useQueryClient } from "react-query";
 
 
 
@@ -16,46 +16,40 @@ const WritePost = () => {
 
     const urlImg = "https://shareurlife-23-back.onrender.com/images/"
     const {userInfos} = useContext(AuthContext)
-
-
+    const queryClient = useQueryClient();
     const[file, setFile] = useState(null)
     const[desc, setDesc] = useState("")
- 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        if(desc === ""){
-            alert('Ecrivez quelque chose...')
+
+    const mutation = useMutation(
+        (newPost) => {
+          return request.post('/post/add', newPost);
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["posts"]);
+          },
         }
-        else{
-            const newPost = {
-                desc,
-            }
-            if (file){
-                const data= new FormData()
-                const filename = Date.now() + file.name
-                data.append('name', filename)
-                data.append('file', file)
-                newPost.img = filename
-                try{
-                    await request.post('/upload', data)
-                }
-                catch(err){
-                    console.log(err)
-                }
-            }
-            try {
-                await request.post('/post/add', newPost)
-                window.location.reload()
+    );
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        let img =""
+        if (file){
+            const data= new FormData()
+            const filename = Date.now() + file.name
+            data.append('name', filename)
+            data.append('file', file)
+            img = filename
+            try{
+                await request.post('/upload', data)
             }
             catch(err){
                 console.log(err)
             }
-        }    
-    }
-
-
-
-
+        }
+        mutation.mutate({ desc, img});
+        setDesc("");
+        setFile(null);
+    };
 
     return (
         <div className="writePost">
@@ -63,7 +57,7 @@ const WritePost = () => {
                 <div className="userImg">
                     <img src={userInfos && urlImg + userInfos.profilPic} alt="" />
                 </div>
-                <textarea className={file ? "width" : ""} name="" id="" cols="30" rows="10" placeholder="Partagez vos envies......." required onChange={e => setDesc(e.target.value)}></textarea>
+                <textarea className={file ? "width" : ""} name="" id="" cols="30" rows="10" placeholder="Partagez vos envies......." required onChange={e => setDesc(e.target.value)}  value={desc}></textarea>
                 {file && 
                     <div className="filePost">
                         <img src={URL.createObjectURL(file)} alt="" className="imgPost"/>
