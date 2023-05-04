@@ -86,7 +86,18 @@ const Profile = () => {
         mutation.mutate(id);
     };
    
-
+    const icon = () =>{
+        if(id !== userOnline && follower){
+           const icon = follower.filter(item => item.followerUserId === userOnline)
+           if(icon.length){
+            return<PersonRemoveIcon className='settingsIcon' onClick={handleDeleteRelation}/>
+           }
+           if(icon.length===0){
+            return<PersonAddIcon className='settingsIcon' onClick={handleRelation}/>
+           }
+    
+        }
+    }
 
     return (
         <div className="profil">
@@ -96,16 +107,7 @@ const Profile = () => {
             {id === userOnline && 
                 <Link to={`/settings`}><SettingsIcon className='settingsIcon' /></Link>
             }
-            {id !== userOnline && follower && follower.map(item => {
-                return (
-                    <div key={item.id}>
-                    {item.followerUserId === userOnline ? (<PersonRemoveIcon className='settingsIcon' onClick={handleDeleteRelation}/>) : (<PersonAddIcon className='settingsIcon' onClick={handleRelation}/>)}
-                    </div>
-                )
-            } )}
-            {id !== userOnline && follower && follower.length === 0 &&
-                <PersonAddIcon className='settingsIcon' onClick={handleRelation}/>
-            }
+            {icon()}
             <div className="profil_infos">
                 <div className="infosLeft">
                     <div className="title">
